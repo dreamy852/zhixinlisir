@@ -1,15 +1,33 @@
+// Helper function to get ISO week number (YYYY-W[week])
+// ISO 8601 week: Week starts on Monday, week 1 contains Jan 4th
+function getISOWeek() {
+    const date = new Date();
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dayNum = d.getDay() || 7; // Convert Sunday (0) to 7
+    d.setDate(d.getDate() + 4 - dayNum); // Get Thursday of current week
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    const year = d.getFullYear();
+    
+    // Format as YYYY-W[week] with zero padding
+    return `${year}-W${weekNo.toString().padStart(2, '0')}`;
+}
+
 // Configuration - Google Sheets IDs and Sheet Names
 const CONFIG = {
     appsScriptUrl: 'https://script.google.com/macros/s/AKfycby4IuZThCSvWvNMAdBuHt4iCEpcBEEMPwh4pmXK6wWJrzbRB0mfSOrk-d9xKAYQWIw/exec',
     urls: {
         sheetId: '1utrF4anYUAoDGHMj1tAZDQOVbi-l61LYRWWMAIJJ1lw',
         sheetName: 'Sheet1', // gid=0
-        defaultUrls: [
-            { name: 'Report generator', url: 'https://tutorial-report-generator.pages.dev/' },
-            { name: 'Timetable', url: 'https://docs.google.com/spreadsheets/d/1XGYc-0WeVQSH1aauZs7uiipujw_7zyeWTcdrjZzEltg/edit?gid=1420492652#gid=1420492652' },
-            { name: 'Overleaf', url: 'https://www.overleaf.com/project' },
-            { name: 'Timetable import', url: 'http://112.124.37.52:5001/teacher/56/schedule?week=2025-W51' }
-        ]
+        getDefaultUrls: function() {
+            const currentWeek = getISOWeek();
+            return [
+                { name: 'Report generator', url: 'https://tutorial-report-generator.pages.dev/' },
+                { name: 'Timetable', url: 'https://docs.google.com/spreadsheets/d/1XGYc-0WeVQSH1aauZs7uiipujw_7zyeWTcdrjZzEltg/edit?gid=1420492652#gid=1420492652' },
+                { name: 'Overleaf', url: 'https://www.overleaf.com/project' },
+                { name: 'Timetable import', url: `http://112.124.37.52:5001/teacher/56/schedule?week=${currentWeek}` }
+            ];
+        }
     },
     data: {
         sheetId: '1utrF4anYUAoDGHMj1tAZDQOVbi-l61LYRWWMAIJJ1lw',
@@ -220,22 +238,51 @@ async function loadUrls() {
         let urls = [];
         
         if (data.length > 0 && data[0].Name && data[0].URL) {
-            urls = data.map(row => ({ name: row.Name, url: row.URL }));
+            urls = data.map(row => {
+                // Update Timetable import URL dynamically if it exists
+                if (row.Name === 'Timetable import' || row.URL.includes('112.124.37.52:5001/teacher/56/schedule')) {
+                    const currentWeek = getISOWeek();
+                    return { name: row.Name, url: `http://112.124.37.52:5001/teacher/56/schedule?week=${currentWeek}` };
+                }
+                return { name: row.Name, url: row.URL };
+            });
         } else {
-            // Fallback to default URLs
-            urls = CONFIG.urls.defaultUrls;
+            // Fallback to default URLs (with dynamic week)
+            urls = CONFIG.urls.getDefaultUrls();
         }
         
-        // Merge with localStorage backup
+        // Merge with localStorage backup, but update Timetable import URLs
         const backupKey = `sheet_${CONFIG.urls.sheetId}_0`;
         const backup = JSON.parse(localStorage.getItem(backupKey) || '[]');
-        urls = [...urls, ...backup];
+        const updatedBackup = backup.map(item => {
+            if (item.name === 'Timetable import' || (item.url && item.url.includes('112.124.37.52:5001/teacher/56/schedule'))) {
+                const currentWeek = getISOWeek();
+                return { name: item.name || 'Timetable import', url: `http://112.124.37.52:5001/teacher/56/schedule?week=${currentWeek}` };
+            }
+            return item;
+        });
+        urls = [...urls, ...updatedBackup];
+        
+        // Remove duplicates and ensure Timetable import is always up to date
+        const seen = new Set();
+        urls = urls.filter(item => {
+            const key = item.name;
+            if (seen.has(key)) {
+                // If duplicate, keep the one with updated week for Timetable import
+                if (key === 'Timetable import') {
+                    return true; // Keep this one (it has the updated week)
+                }
+                return false;
+            }
+            seen.add(key);
+            return true;
+        });
         
         renderUrls(urls);
     } catch (error) {
         console.error('Error loading URLs:', error);
-        // Fallback to default URLs
-        renderUrls(CONFIG.urls.defaultUrls);
+        // Fallback to default URLs (with dynamic week)
+        renderUrls(CONFIG.urls.getDefaultUrls());
     }
 }
 
