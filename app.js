@@ -110,6 +110,8 @@ class GoogleSheetsAPI {
     // Write to Google Sheets using Google Apps Script Web App
     async appendRow(sheetId, gid, rowData) {
         try {
+            console.log('Appending row:', { gid, rowData });
+            
             // Try to write to Google Sheets via Apps Script
             const response = await fetch(CONFIG.appsScriptUrl, {
                 method: 'POST',
@@ -123,27 +125,34 @@ class GoogleSheetsAPI {
                 })
             });
             
-            if (!response.ok) {
-                throw new Error('Failed to append row');
-            }
-            
-            const result = await response.json();
-            
-            // Also store in localStorage as backup
+            // Always save to localStorage as backup
             const key = `sheet_${sheetId}_${gid}`;
             const existing = JSON.parse(localStorage.getItem(key) || '[]');
             existing.push(rowData);
             localStorage.setItem(key, JSON.stringify(existing));
             
-            return result;
+            if (response.ok) {
+                try {
+                    const result = await response.json();
+                    console.log('Apps Script response:', result);
+                    return result;
+                } catch (jsonError) {
+                    console.warn('Could not parse JSON response:', jsonError);
+                    return { success: true, message: 'Data sent (response not readable)' };
+                }
+            } else {
+                const errorText = await response.text();
+                console.warn('Apps Script error response:', errorText);
+                return { success: true, message: 'Data saved to localStorage (Apps Script returned error)' };
+            }
         } catch (error) {
-            console.error('Error appending row via Apps Script, using localStorage:', error);
+            console.error('Error appending row via Apps Script:', error);
             // Fallback to localStorage
             const key = `sheet_${sheetId}_${gid}`;
             const existing = JSON.parse(localStorage.getItem(key) || '[]');
             existing.push(rowData);
             localStorage.setItem(key, JSON.stringify(existing));
-            return { success: true, message: 'Saved to local storage (Apps Script failed)' };
+            return { success: true, message: 'Saved to local storage (Apps Script failed: ' + error.message + ')' };
         }
     }
 
@@ -502,13 +511,22 @@ function initModals() {
     
     urlForm.onsubmit = async (e) => {
         e.preventDefault();
-        const name = document.getElementById('urlName').value;
-        const url = document.getElementById('urlLink').value;
+        const name = document.getElementById('urlName').value.trim();
+        const url = document.getElementById('urlLink').value.trim();
+        
+        if (!name || !url) {
+            alert('請填寫名稱和 URL');
+            return;
+        }
         
         try {
-            await sheetsAPI.appendRow(CONFIG.urls.sheetId, '0', { Name: name, URL: url });
+            const result = await sheetsAPI.appendRow(CONFIG.urls.sheetId, '0', { Name: name, URL: url });
+            console.log('Add URL result:', result);
             urlModal.classList.remove('active');
-            await loadUrls();
+            // Reload after a short delay to allow Google Sheets to update
+            setTimeout(() => {
+                loadUrls();
+            }, 500);
         } catch (error) {
             alert('新增失敗，請檢查網路連線或 Google Sheets 設定');
             console.error('Error adding URL:', error);
@@ -528,13 +546,22 @@ function initModals() {
     
     dataForm.onsubmit = async (e) => {
         e.preventDefault();
-        const data = document.getElementById('dataKey').value;
-        const value = document.getElementById('dataValue').value;
+        const data = document.getElementById('dataKey').value.trim();
+        const value = document.getElementById('dataValue').value.trim();
+        
+        if (!data || !value) {
+            alert('請填寫資料和數值');
+            return;
+        }
         
         try {
-            await sheetsAPI.appendRow(CONFIG.data.sheetId, CONFIG.data.gid, { 資料: data, 數值: value });
+            const result = await sheetsAPI.appendRow(CONFIG.data.sheetId, CONFIG.data.gid, { 資料: data, 數值: value });
+            console.log('Add data result:', result);
             dataModal.classList.remove('active');
-            await loadData();
+            // Reload after a short delay to allow Google Sheets to update
+            setTimeout(() => {
+                loadData();
+            }, 500);
         } catch (error) {
             alert('新增失敗，請檢查網路連線或 Google Sheets 設定');
             console.error('Error adding data:', error);
@@ -553,12 +580,21 @@ function initModals() {
     
     taskForm.onsubmit = async (e) => {
         e.preventDefault();
-        const taskName = document.getElementById('taskName').value;
+        const taskName = document.getElementById('taskName').value.trim();
+        
+        if (!taskName) {
+            alert('請填寫任務名稱');
+            return;
+        }
         
         try {
-            await sheetsAPI.appendRow(CONFIG.tasks.sheetId, CONFIG.tasks.gid, { 任務名稱: taskName });
+            const result = await sheetsAPI.appendRow(CONFIG.tasks.sheetId, CONFIG.tasks.gid, { 任務名稱: taskName });
+            console.log('Add task result:', result);
             taskModal.classList.remove('active');
-            await loadTasks();
+            // Reload after a short delay to allow Google Sheets to update
+            setTimeout(() => {
+                loadTasks();
+            }, 500);
         } catch (error) {
             alert('新增失敗，請檢查網路連線或 Google Sheets 設定');
             console.error('Error adding task:', error);

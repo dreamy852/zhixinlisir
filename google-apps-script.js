@@ -13,15 +13,22 @@ function getSheetByGid(gid) {
   const spreadsheet = SpreadsheetApp.openById('1utrF4anYUAoDGHMj1tAZDQOVbi-l61LYRWWMAIJJ1lw');
   
   // 根據 gid 取得對應的 sheet
-  // gid=0: URLs
-  // gid=997844508: Data
-  // gid=2063120752: Tasks
+  // gid=0: 第一個 sheet (URLs)
+  // gid=997844508: Data sheet
+  // gid=2063120752: Tasks sheet
   
   const sheets = spreadsheet.getSheets();
+  
+  // 如果 gid 是 '0'，返回第一個 sheet
+  if (gid === '0' || gid === 0) {
+    return sheets[0];
+  }
+  
+  // 否則根據 sheet ID 查找
   for (let i = 0; i < sheets.length; i++) {
     const sheet = sheets[i];
     const sheetId = sheet.getSheetId();
-    if (sheetId.toString() === gid) {
+    if (sheetId.toString() === gid.toString()) {
       return sheet;
     }
   }
@@ -38,18 +45,30 @@ function doPost(e) {
     
     const sheet = getSheetByGid(gid);
     
+    // 確保 sheet 有標題行
+    if (sheet.getLastRow() === 0) {
+      // 根據 gid 設置標題
+      if (gid === '0' || gid === 0) {
+        sheet.appendRow(['Name', 'URL']);
+      } else if (gid === '997844508') {
+        sheet.appendRow(['資料', '數值']);
+      } else if (gid === '2063120752') {
+        sheet.appendRow(['任務名稱']);
+      }
+    }
+    
     if (action === 'append') {
       // 根據 gid 決定欄位
       let row;
-      if (gid === '0') {
+      if (gid === '0' || gid === 0) {
         // URLs: Name, URL
-        row = [rowData.Name || rowData.name, rowData.URL || rowData.url];
+        row = [rowData.Name || rowData.name || '', rowData.URL || rowData.url || ''];
       } else if (gid === '997844508') {
         // Data: 資料, 數值
-        row = [rowData.資料 || rowData.data, rowData.數值 || rowData.value];
+        row = [rowData.資料 || rowData.data || '', rowData.數值 || rowData.value || ''];
       } else if (gid === '2063120752') {
         // Tasks: 任務名稱
-        row = [rowData.任務名稱 || rowData.taskName || rowData.name];
+        row = [rowData.任務名稱 || rowData.taskName || rowData.name || ''];
       } else {
         row = Object.values(rowData);
       }
@@ -57,7 +76,9 @@ function doPost(e) {
       sheet.appendRow(row);
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
-        message: 'Row added successfully'
+        message: 'Row added successfully',
+        gid: gid,
+        row: row
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
