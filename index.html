@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eduzhixin Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Eduzhixin Hub</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="urls">Common URL</button>
+            <button class="tab-button" data-tab="data">Data</button>
+            <button class="tab-button" data-tab="tasks">Task</button>
+        </div>
+
+        <!-- Common URL Tab -->
+        <div id="urls" class="tab-content active">
+            <div class="section-header">
+                <h2>常用連結</h2>
+                <button class="add-button" id="addUrlBtn">新增</button>
+            </div>
+            <div class="url-list" id="urlList">
+                <!-- URLs will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Data Tab -->
+        <div id="data" class="tab-content">
+            <div class="section-header">
+                <h2>資料</h2>
+                <button class="add-button" id="addDataBtn">新增</button>
+            </div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>資料</th>
+                            <th>數值</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataList">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Task Tab -->
+        <div id="tasks" class="tab-content">
+            <div class="section-header">
+                <h2>任務</h2>
+                <button class="add-button" id="addTaskBtn">新增</button>
+            </div>
+            <div class="task-list" id="taskList">
+                <!-- Tasks will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding URL -->
+    <div id="urlModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>新增連結</h2>
+            <form id="urlForm">
+                <label for="urlName">名稱:</label>
+                <input type="text" id="urlName" required>
+                <label for="urlLink">URL:</label>
+                <input type="url" id="urlLink" required>
+                <button type="submit">新增</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for adding Data -->
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>新增資料</h2>
+            <form id="dataForm">
+                <label for="dataKey">資料:</label>
+                <input type="text" id="dataKey" required>
+                <label for="dataValue">數值:</label>
+                <input type="text" id="dataValue" required>
+                <button type="submit">新增</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for adding Task -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>新增任務</h2>
+            <form id="taskForm">
+                <label for="taskName">任務名稱:</label>
+                <input type="text" id="taskName" required>
+                <button type="submit">新增</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
