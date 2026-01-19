@@ -1,9 +1,5 @@
-// Google Sheets configuration
-const SHEET_ID = '1utrF4anYUAoDGHMj1tAZDQOVbi-l61LYRWWMAIJJ1lw';
-const SHEET_NAME = 'Sheet1'; // Default sheet name
-
-// Google Apps Script Web App URL
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeOmvP6PuNzteC3z4MG7ae3hz2ZfbXXiU_5V6VRRJ6BGaLflLwAgFvVFbxPa-NMdRL/exec';
+// CSV file configuration
+const CSV_FILE = 'links.csv';
 
 // Tab switching functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -24,8 +20,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Load URLs from Google Sheet on page load
-    loadUrlsFromSheet();
+    // Load URLs from CSV file on page load
+    loadUrlsFromCSV();
+    
+    // Update download button on page load
+    updateDownloadButton();
 
     // Handle form submission
     const addUrlForm = document.getElementById('add-url-form');
@@ -34,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Function to load URLs from Google Sheet
-async function loadUrlsFromSheet() {
+// Function to load URLs from CSV file
+async function loadUrlsFromCSV() {
     const urlsList = document.getElementById('urls-list');
     
     try {
@@ -45,36 +44,27 @@ async function loadUrlsFromSheet() {
             displayUrls(localUrls);
         }
 
-        // Try to fetch from Google Apps Script (primary method)
-        if (APPS_SCRIPT_URL) {
-            try {
-                const response = await fetch(APPS_SCRIPT_URL);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.urls) {
-                        if (data.urls.length > 0) {
-                            displayUrls(data.urls);
-                            saveUrlsToLocalStorage(data.urls);
-                        } else if (localUrls.length === 0) {
-                            showEmpty();
-                        }
-                        return; // Successfully loaded from Apps Script
-                    } else if (data.error) {
-                        console.warn('Apps Script error:', data.error);
-                    }
-                } else {
-                    console.warn('Apps Script returned non-OK response:', response.status, response.statusText);
+        // Try to fetch from CSV file
+        try {
+            const response = await fetch(CSV_FILE);
+            if (response.ok) {
+                const csvText = await response.text();
+                const urls = parseCSV(csvText);
+                if (urls.length > 0) {
+                    displayUrls(urls);
+                    saveUrlsToLocalStorage(urls);
+                } else if (localUrls.length === 0) {
+                    showEmpty();
                 }
-            } catch (error) {
-                console.warn('Could not fetch from Apps Script:', error);
-                // Continue to localStorage fallback
+                return; // Successfully loaded from CSV
+            } else {
+                console.warn('Could not fetch CSV file:', response.status);
             }
-        } else {
-            console.warn('Apps Script URL not configured');
+        } catch (error) {
+            console.warn('Could not fetch from CSV file, using localStorage:', error);
         }
 
-        // If Apps Script failed or not configured, use localStorage
+        // If CSV failed, use localStorage
         if (localUrls.length === 0) {
             showEmpty();
         }
@@ -150,6 +140,9 @@ function displayUrls(urls) {
         return;
     }
     
+    // Store current URLs array for delete function
+    window.currentUrls = urls;
+    
     urlsList.innerHTML = urls.map((item, index) => `
         <div class="url-item">
             <a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.name || item.url}</a>
@@ -194,95 +187,82 @@ async function handleAddUrl(event) {
     displayUrls(urls);
     
     // Show success message
-    showSuccessMessage('URL added successfully!');
+    showSuccessMessage('URL added successfully! You can download the updated CSV file.');
     
     // Clear form
     nameInput.value = '';
     urlInput.value = '';
     
-    // Try to add to Google Sheets (requires API setup)
-    // For now, we'll just store in localStorage
-    // In production, you would use Google Sheets API here
-    try {
-        await addUrlToSheet(name, url);
-    } catch (error) {
-        console.log('Could not add to Google Sheets:', error);
-        // URL is already saved to localStorage, so it's okay
-    }
+    // Update download button visibility
+    updateDownloadButton();
 }
 
-// Add URL to Google Sheet using Apps Script
-async function addUrlToSheet(name, url) {
-    if (!APPS_SCRIPT_URL) {
-        console.warn('Apps Script URL not configured. URL saved to localStorage only.');
-        return;
-    }
+// Download CSV file with current URLs
+function downloadCSV() {
+    const urls = loadUrlsFromLocalStorage();
+    
+    // Create CSV content
+    let csvContent = 'Name,URL\n';
+    urls.forEach(item => {
+        // Escape commas and quotes in CSV
+        const name = `"${item.name.replace(/"/g, '""')}"`;
+        const url = `"${item.url.replace(/"/g, '""')}"`;
+        csvContent += `${name},${url}\n`;
+    });
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', CSV_FILE);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showSuccessMessage('CSV file downloaded successfully!');
+}
 
-    try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                url: url
-            })
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-            console.log('URL added to Google Sheet successfully');
-            // Reload URLs from sheet to get updated list
-            loadUrlsFromSheet();
-        } else {
-            console.error('Error adding URL to sheet:', data.error);
+// Update download button visibility
+function updateDownloadButton() {
+    const urls = loadUrlsFromLocalStorage();
+    let downloadBtn = document.getElementById('download-csv-btn');
+    
+    if (urls.length > 0) {
+        if (!downloadBtn) {
+            // Create download button if it doesn't exist
+            downloadBtn = document.createElement('button');
+            downloadBtn.id = 'download-csv-btn';
+            downloadBtn.className = 'btn-primary';
+            downloadBtn.textContent = 'Download links.csv';
+            downloadBtn.onclick = downloadCSV;
+            
+            const addUrlSection = document.querySelector('.add-url-section');
+            const form = document.getElementById('add-url-form');
+            addUrlSection.insertBefore(downloadBtn, form);
         }
-    } catch (error) {
-        console.error('Error calling Apps Script:', error);
+        downloadBtn.style.display = 'inline-block';
+    } else if (downloadBtn) {
+        downloadBtn.style.display = 'none';
     }
 }
 
 // Delete URL
 async function deleteUrl(index) {
     if (confirm('Are you sure you want to delete this URL?')) {
-        const urls = loadUrlsFromLocalStorage();
-        const urlToDelete = urls[index];
+        // Get current URLs (from display or localStorage)
+        const urls = window.currentUrls || loadUrlsFromLocalStorage();
         
-        // Remove from localStorage immediately for UI feedback
+        // Remove from array
         urls.splice(index, 1);
         saveUrlsToLocalStorage(urls);
         displayUrls(urls);
-        showSuccessMessage('URL deleted successfully!');
+        showSuccessMessage('URL deleted successfully! You can download the updated CSV file.');
         
-        // Delete from Google Sheet if Apps Script is configured
-        if (APPS_SCRIPT_URL && urlToDelete) {
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'delete',
-                        name: urlToDelete.name,
-                        url: urlToDelete.url
-                    })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    console.log('URL deleted from Google Sheet successfully');
-                    // Reload URLs from sheet to get updated list
-                    loadUrlsFromSheet();
-                } else {
-                    console.error('Error deleting URL from sheet:', data.error);
-                }
-            } catch (error) {
-                console.error('Error calling Apps Script:', error);
-            }
-        }
+        // Update download button visibility
+        updateDownloadButton();
     }
 }
 

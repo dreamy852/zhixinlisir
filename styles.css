@@ -167,6 +167,10 @@ header h1 {
     transform: translateY(0);
 }
 
+.btn-primary + .btn-primary {
+    margin-left: 10px;
+}
+
 .urls-display {
     margin-top: 30px;
 }
