@@ -1,112 +1,63 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eduzhixin Hub</title>
+    <title>Index - Common URL, Data, Task</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Eduzhixin Hub</h1>
+            <h1>Index Dashboard</h1>
         </header>
 
         <div class="tabs">
-            <button class="tab-button active" data-tab="urls">Common URL</button>
+            <button class="tab-button active" data-tab="common-url">Common URL</button>
             <button class="tab-button" data-tab="data">Data</button>
-            <button class="tab-button" data-tab="tasks">Task</button>
+            <button class="tab-button" data-tab="task">Task</button>
         </div>
 
-        <!-- Common URL Tab -->
-        <div id="urls" class="tab-content active">
+        <div class="tab-content active" id="common-url">
             <div class="section-header">
-                <h2>常用連結</h2>
-                <button class="add-button" id="addUrlBtn">新增</button>
+                <h2>Common URLs</h2>
+                <p class="sheet-info">Connected to: <a href="https://docs.google.com/spreadsheets/d/1utrF4anYUAoDGHMj1tAZDQOVbi-l61LYRWWMAIJJ1lw/edit?gid=0#gid=0" target="_blank">Google Sheet</a></p>
             </div>
-            <div class="url-list" id="urlList">
-                <!-- URLs will be loaded here -->
+            
+            <div class="add-url-section">
+                <h3>Add New URL</h3>
+                <form id="add-url-form">
+                    <div class="form-group">
+                        <label for="url-name">URL Name:</label>
+                        <input type="text" id="url-name" name="url-name" required placeholder="Enter URL name">
+                    </div>
+                    <div class="form-group">
+                        <label for="url-link">URL Link:</label>
+                        <input type="url" id="url-link" name="url-link" required placeholder="https://example.com">
+                    </div>
+                    <button type="submit" class="btn-primary">Add URL</button>
+                </form>
+            </div>
+
+            <div class="urls-display">
+                <h3>Saved URLs</h3>
+                <div id="urls-list" class="urls-list">
+                    <p class="loading">Loading URLs from Google Sheet...</p>
+                </div>
             </div>
         </div>
 
-        <!-- Data Tab -->
-        <div id="data" class="tab-content">
-            <div class="section-header">
-                <h2>資料</h2>
-                <button class="add-button" id="addDataBtn">新增</button>
-            </div>
-            <div class="data-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>資料</th>
-                            <th>數值</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataList">
-                        <!-- Data will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+        <div class="tab-content" id="data">
+            <h2>Data</h2>
+            <p>Data tab content goes here.</p>
         </div>
 
-        <!-- Task Tab -->
-        <div id="tasks" class="tab-content">
-            <div class="section-header">
-                <h2>任務</h2>
-                <button class="add-button" id="addTaskBtn">新增</button>
-            </div>
-            <div class="task-list" id="taskList">
-                <!-- Tasks will be loaded here -->
-            </div>
+        <div class="tab-content" id="task">
+            <h2>Task</h2>
+            <p>Task tab content goes here.</p>
         </div>
     </div>
 
-    <!-- Modal for adding URL -->
-    <div id="urlModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>新增連結</h2>
-            <form id="urlForm">
-                <label for="urlName">名稱:</label>
-                <input type="text" id="urlName" required>
-                <label for="urlLink">URL:</label>
-                <input type="url" id="urlLink" required>
-                <button type="submit">新增</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for adding Data -->
-    <div id="dataModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>新增資料</h2>
-            <form id="dataForm">
-                <label for="dataKey">資料:</label>
-                <input type="text" id="dataKey" required>
-                <label for="dataValue">數值:</label>
-                <input type="text" id="dataValue" required>
-                <button type="submit">新增</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for adding Task -->
-    <div id="taskModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>新增任務</h2>
-            <form id="taskForm">
-                <label for="taskName">任務名稱:</label>
-                <input type="text" id="taskName" required>
-                <button type="submit">新增</button>
-            </form>
-        </div>
-    </div>
-
-    <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
-

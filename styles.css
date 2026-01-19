@@ -16,7 +16,7 @@ body {
     margin: 0 auto;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     overflow: hidden;
 }
 
@@ -40,14 +40,14 @@ header h1 {
 
 .tab-button {
     flex: 1;
-    padding: 15px 20px;
+    padding: 20px;
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.1em;
     font-weight: 500;
     color: #666;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     border-bottom: 3px solid transparent;
 }
 
@@ -57,288 +57,227 @@ header h1 {
 }
 
 .tab-button.active {
+    background: white;
     color: #667eea;
     border-bottom-color: #667eea;
-    background: white;
 }
 
 .tab-content {
     display: none;
     padding: 30px;
-    min-height: 400px;
+    animation: fadeIn 0.3s ease;
 }
 
 .tab-content.active {
     display: block;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .section-header h2 {
     color: #333;
-    font-size: 1.8em;
+    font-size: 2em;
+    margin-bottom: 10px;
 }
 
-.add-button {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
+.sheet-info {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.sheet-info a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.sheet-info a:hover {
+    text-decoration: underline;
+}
+
+.add-url-section {
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.add-url-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
     font-weight: 500;
-    transition: background 0.3s;
 }
 
-.add-button:hover {
-    background: #5568d3;
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
 }
 
-/* URL List Styles */
-.url-list {
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.urls-display {
+    margin-top: 30px;
+}
+
+.urls-display h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.urls-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 15px;
 }
 
 .url-item {
-    background: #f8f9fa;
-    padding: 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
     border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s;
-    position: relative;
+    padding: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .url-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
     transform: translateY(-2px);
 }
 
 .url-item a {
-    display: block;
     color: #667eea;
     text-decoration: none;
     font-weight: 500;
-    margin-bottom: 8px;
-    word-break: break-all;
+    font-size: 1.1em;
+    flex: 1;
 }
 
 .url-item a:hover {
     text-decoration: underline;
 }
 
-.url-item .url-link {
-    font-size: 12px;
-    color: #999;
-    margin-bottom: 10px;
-    word-break: break-all;
-}
-
-.delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+.url-item .delete-btn {
     background: #ff4757;
     color: white;
     border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
+    font-size: 0.9em;
+    transition: background 0.3s ease;
 }
 
-.delete-btn:hover {
-    background: #ee3742;
+.url-item .delete-btn:hover {
+    background: #ff3838;
 }
 
-/* Data Table Styles */
-.data-table {
-    overflow-x: auto;
+.loading, .error, .empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 1.1em;
 }
 
-.data-table table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
+.error {
+    color: #ff4757;
 }
 
-.data-table th,
-.data-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+.empty {
+    color: #999;
 }
 
-.data-table th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #333;
-}
-
-.data-table tr:hover {
-    background: #f8f9fa;
-}
-
-/* Task List Styles */
-.task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.task-item {
-    background: #f8f9fa;
-    padding: 15px 20px;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s;
-}
-
-.task-item:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.task-name {
-    font-size: 16px;
-    color: #333;
-    flex: 1;
-}
-
-/* Modal Styles */
-.modal {
+.success-message {
+    background: #2ed573;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
     display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s;
 }
 
-.modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    animation: slideDown 0.3s;
+.success-message.show {
+    display: block;
+    animation: slideDown 0.3s ease;
 }
 
 @keyframes slideDown {
     from {
-        transform: translateY(-50px);
         opacity: 0;
+        transform: translateY(-10px);
     }
     to {
-        transform: translateY(0);
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.close {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #999;
-    cursor: pointer;
-    transition: color 0.3s;
+@media (max-width: 768px) {
+    .urls-list {
+        grid-template-columns: 1fr;
+    }
+    
+    header h1 {
+        font-size: 2em;
+    }
+    
+    .tab-button {
+        padding: 15px;
+        font-size: 1em;
+    }
 }
-
-.close:hover {
-    color: #333;
-}
-
-.modal-content h2 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modal-content label {
-    font-weight: 500;
-    color: #333;
-}
-
-.modal-content input {
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.modal-content input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-.modal-content button[type="submit"] {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background 0.3s;
-}
-
-.modal-content button[type="submit"]:hover {
-    background: #5568d3;
-}
-
-/* Loading State */
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #999;
-}
-
-.error {
-    background: #ffe5e5;
-    color: #d32f2f;
-    padding: 15px;
-    border-radius: 6px;
-    margin: 20px 0;
-}
-
