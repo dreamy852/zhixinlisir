@@ -444,6 +444,60 @@ header h1 {
     color: #999;
 }
 
+/* Settings Section */
+.settings-section {
+    margin-top: 30px;
+}
+
+.settings-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.setting-item {
+    background: linear-gradient(135deg, rgba(154, 205, 50, 0.05) 0%, rgba(39, 174, 96, 0.05) 100%);
+    padding: 25px;
+    border-radius: 8px;
+    border: 2px solid rgba(154, 205, 50, 0.3);
+    text-align: center;
+}
+
+.setting-item h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.setting-item p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+}
+
+.btn-danger {
+    background: #ff4757;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+}
+
+.btn-danger:hover {
+    background: #ff3838;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+}
+
+.btn-danger:active {
+    transform: translateY(0);
+}
+
 @media (max-width: 768px) {
     .urls-list {
         grid-template-columns: 1fr;
@@ -465,5 +519,9 @@ header h1 {
     .data-table th,
     .data-table td {
         padding: 10px;
+    }
+
+    .settings-buttons {
+        grid-template-columns: 1fr;
     }
 }

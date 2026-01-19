@@ -16,12 +16,12 @@
             <button class="tab-button active" data-tab="common-url">一般連結</button>
             <button class="tab-button" data-tab="data">資料</button>
             <button class="tab-button" data-tab="task">工作</button>
+            <button class="tab-button" data-tab="settings">設定</button>
         </div>
 
         <div class="tab-content active" id="common-url">
             <div class="section-header">
                 <h2>一般連結</h2>
-                <p class="sheet-info">資料儲存在：<code>links.csv</code>（頁面載入時讀取）</p>
             </div>
             
             <div class="add-url-section">
@@ -69,7 +69,6 @@
         <div class="tab-content" id="data">
             <div class="section-header">
                 <h2>資料</h2>
-                <p class="sheet-info">資料儲存在：<code>data.csv</code>（頁面載入時讀取）</p>
             </div>
             
             <div class="add-url-section">
@@ -106,7 +105,7 @@
                         </thead>
                         <tbody id="data-list">
                             <tr>
-                                <td colspan="3" class="loading">正在從 CSV 檔案載入資料...</td>
+                                <td colspan="3" class="loading">載入中...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -117,7 +116,6 @@
         <div class="tab-content" id="task">
             <div class="section-header">
                 <h2>工作</h2>
-                <p class="sheet-info">資料儲存在：<code>task.csv</code>（頁面載入時讀取）</p>
             </div>
             
             <div class="add-url-section">
@@ -154,10 +152,39 @@
                         </thead>
                         <tbody id="task-list">
                             <tr>
-                                <td colspan="3" class="loading">正在從 CSV 檔案載入工作...</td>
+                                <td colspan="3" class="loading">載入中...</td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="settings">
+            <div class="section-header">
+                <h2>設定</h2>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-buttons">
+                    <div class="setting-item">
+                        <h3>上載資料</h3>
+                        <p>從 CSV 檔案匯入資料到系統</p>
+                        <input type="file" id="upload-csv-input" accept=".csv" style="display: none;">
+                        <button class="btn-primary" onclick="document.getElementById('upload-csv-input').click()">選擇 CSV 檔案</button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h3>下載資料</h3>
+                        <p>將所有資料匯出為 CSV 檔案</p>
+                        <button class="btn-primary" onclick="downloadAllData()">下載所有資料</button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h3>清除資料</h3>
+                        <p>清除所有儲存的資料（無法復原）</p>
+                        <button class="btn-danger" onclick="clearAllData()">清除所有資料</button>
+                    </div>
                 </div>
             </div>
         </div>

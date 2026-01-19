@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Load URLs from CSV file on page load
-    loadUrlsFromCSV();
+    // Load URLs from localStorage on page load
+    loadUrlsOnPageLoad();
 
     // Handle form submission
     const addUrlForm = document.getElementById('add-url-form');
@@ -55,8 +55,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Load Data and Task on page load
-    loadDataFromCSV();
-    loadTaskFromCSV();
+    loadDataOnPageLoad();
+    loadTaskOnPageLoad();
+
+    // Setup file upload handler
+    const uploadInput = document.getElementById('upload-csv-input');
+    if (uploadInput) {
+        uploadInput.addEventListener('change', handleFileUpload);
+    }
 
     // Handle Data form
     const addDataForm = document.getElementById('add-data-form');
@@ -111,47 +117,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Function to load URLs from CSV file
-async function loadUrlsFromCSV() {
+// Function to load URLs from localStorage on page load
+function loadUrlsOnPageLoad() {
     const urlsList = document.getElementById('urls-list');
+    if (!urlsList) return;
     
     try {
-        // Load from localStorage first for immediate display (fallback)
-        const localUrls = loadUrlsFromLocalStorage();
-        if (localUrls.length > 0) {
-            displayUrls(localUrls);
-        }
-
-        // Try to fetch from CSV file
-        try {
-            const response = await fetch(CSV_FILE);
-            if (response.ok) {
-                const csvText = await response.text();
-                const urls = parseCSV(csvText);
-                if (urls.length > 0) {
-                    displayUrls(urls);
-                    saveUrlsToLocalStorage(urls);
-                } else if (localUrls.length === 0) {
-                    showEmpty();
-                }
-                return; // Successfully loaded from CSV
-            } else {
-                console.warn('Could not fetch CSV file:', response.status);
-            }
-        } catch (error) {
-            console.warn('Could not fetch from CSV file, using localStorage:', error);
-        }
-
-        // If CSV failed, use localStorage
-        if (localUrls.length === 0) {
+        const urls = loadUrlsFromLocalStorage();
+        if (urls.length > 0) {
+            displayUrls(urls);
+        } else {
             showEmpty();
         }
     } catch (error) {
         console.error('Error loading URLs:', error);
-        const localUrls = loadUrlsFromLocalStorage();
-        if (localUrls.length === 0) {
-            urlsList.innerHTML = '<tr><td colspan="3" class="error">載入連結時發生錯誤。請稍後再試。</td></tr>';
-        }
+        urlsList.innerHTML = '<tr><td colspan="3" class="error">載入連結時發生錯誤。請稍後再試。</td></tr>';
     }
 }
 
@@ -212,6 +192,31 @@ function parseCSVLine(line) {
     return values;
 }
 
+// Parse CSV with Category field
+function parseCSVWithCategory(csvText) {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    const items = [];
+    
+    // Skip header row
+    const startIndex = 1;
+    
+    for (let i = startIndex; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const values = parseCSVLine(line);
+        if (values.length >= 3) {
+            items.push({
+                category: values[0].trim(),
+                name: values[1].trim().replace(/^"|"$/g, '').replace(/""/g, '"'),
+                value: values[2].trim().replace(/^"|"$/g, '').replace(/""/g, '"')
+            });
+        }
+    }
+    
+    return items;
+}
+
 // Display URLs in the list
 function displayUrls(urls) {
     const urlsList = document.getElementById('urls-list');
@@ -270,7 +275,6 @@ async function handleAddUrl(event) {
     saveUrlsToLocalStorage(urls);
     displayUrls(urls);
     
-    // Show success message
     showSuccessMessage('連結已成功新增！');
     
     // Clear form and hide it
@@ -321,11 +325,13 @@ async function deleteUrl(index) {
     if (confirm('確定要刪除此連結嗎？')) {
         // Get current URLs (from display or localStorage)
         const urls = window.currentUrls || loadUrlsFromLocalStorage();
+        const urlToDelete = urls[index];
         
         // Remove from array
         urls.splice(index, 1);
         saveUrlsToLocalStorage(urls);
         displayUrls(urls);
+        
         showSuccessMessage('連結已成功刪除！');
     }
 }
@@ -441,11 +447,16 @@ function showDataEmpty() {
 }
 
 // Handle add Data form submission
-async function handleAddData(event) {
+function handleAddData(event) {
     event.preventDefault();
     
     const nameInput = document.getElementById('data-name');
     const valueInput = document.getElementById('data-value');
+    
+    if (!nameInput || !valueInput) {
+        console.error('Data form inputs not found');
+        return;
+    }
     
     const name = nameInput.value.trim();
     const value = valueInput.value.trim();
@@ -479,9 +490,11 @@ async function handleAddData(event) {
 async function deleteData(index) {
     if (confirm('確定要刪除此資料嗎？')) {
         const data = window.currentData || loadDataFromLocalStorage();
+        const dataToDelete = data[index];
         data.splice(index, 1);
         saveDataToLocalStorage(data);
         displayDataTable(data);
+        
         showSuccessMessage('資料已成功刪除！');
     }
 }
@@ -522,45 +535,21 @@ function loadDataFromLocalStorage() {
 
 // ==================== TASK FUNCTIONS ====================
 
-// Function to load Task from CSV file
-async function loadTaskFromCSV() {
+// Function to load Task from localStorage on page load
+function loadTaskOnPageLoad() {
     const taskList = document.getElementById('task-list');
     if (!taskList) return;
     
     try {
-        // Load from localStorage first
-        const localTasks = loadTaskFromLocalStorage();
-        if (localTasks.length > 0) {
-            displayTaskTable(localTasks);
-        }
-
-        // Try to fetch from CSV file
-        try {
-            const response = await fetch(TASK_CSV_FILE);
-            if (response.ok) {
-                const csvText = await response.text();
-                const tasks = parseCSV(csvText);
-                if (tasks.length > 0) {
-                    displayTaskTable(tasks);
-                    saveTaskToLocalStorage(tasks);
-                } else if (localTasks.length === 0) {
-                    showTaskEmpty();
-                }
-                return;
-            }
-        } catch (error) {
-            console.warn('Could not fetch from CSV file, using localStorage:', error);
-        }
-
-        if (localTasks.length === 0) {
+        const tasks = loadTaskFromLocalStorage();
+        if (tasks.length > 0) {
+            displayTaskTable(tasks);
+        } else {
             showTaskEmpty();
         }
     } catch (error) {
         console.error('Error loading tasks:', error);
-        const localTasks = loadTaskFromLocalStorage();
-        if (localTasks.length === 0) {
-            taskList.innerHTML = '<tr><td colspan="3" class="error">Error loading tasks. Please try again later.</td></tr>';
-        }
+        taskList.innerHTML = '<tr><td colspan="3" class="error">載入工作時發生錯誤。請稍後再試。</td></tr>';
     }
 }
 
@@ -595,14 +584,19 @@ function showTaskEmpty() {
 }
 
 // Handle add Task form submission
-async function handleAddTask(event) {
+function handleAddTask(event) {
     event.preventDefault();
     
     const nameInput = document.getElementById('task-name');
     const remarkInput = document.getElementById('task-remark');
     
+    if (!nameInput) {
+        console.error('Task form inputs not found');
+        return;
+    }
+    
     const name = nameInput.value.trim();
-    const remark = remarkInput.value.trim();
+    const remark = remarkInput ? remarkInput.value.trim() : '';
     
     if (!name) {
         alert('請填寫工作名稱。');
@@ -619,7 +613,9 @@ async function handleAddTask(event) {
     
     // Clear form and hide it
     nameInput.value = '';
-    remarkInput.value = '';
+    if (remarkInput) {
+        remarkInput.value = '';
+    }
     
     const addTaskFormContainer = document.getElementById('add-task-form-container');
     const showAddTaskBtn = document.getElementById('show-add-task-btn');
@@ -633,9 +629,11 @@ async function handleAddTask(event) {
 async function deleteTask(index) {
     if (confirm('確定要刪除此工作嗎？')) {
         const tasks = window.currentTasks || loadTaskFromLocalStorage();
+        const taskToDelete = tasks[index];
         tasks.splice(index, 1);
         saveTaskToLocalStorage(tasks);
         displayTaskTable(tasks);
+        
         showSuccessMessage('工作已成功刪除！');
     }
 }
@@ -672,4 +670,202 @@ function saveTaskToLocalStorage(tasks) {
 function loadTaskFromLocalStorage() {
     const stored = localStorage.getItem('commonTasks');
     return stored ? JSON.parse(stored) : [];
+}
+
+// ==================== SETTINGS FUNCTIONS ====================
+
+// Handle file upload
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+        alert('請選擇 CSV 檔案。');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const csvText = e.target.result;
+            const lines = csvText.split('\n').filter(line => line.trim());
+            
+            if (lines.length === 0) {
+                alert('CSV 檔案是空的。');
+                return;
+            }
+            
+            // Detect file type by header
+            const header = lines[0].toLowerCase();
+            let imported = 0;
+            
+            // Check if it's a unified CSV with Category field
+            if (header.includes('category')) {
+                // Parse unified CSV with category
+                const allItems = parseCSVWithCategory(csvText);
+                const urls = [];
+                const data = [];
+                const tasks = [];
+                
+                allItems.forEach(item => {
+                    if (item.category === 'URL' || item.category === 'url') {
+                        urls.push({ name: item.name, url: item.value });
+                    } else if (item.category === 'data') {
+                        data.push({ name: item.name, value: item.value });
+                    } else if (item.category === 'work') {
+                        tasks.push({ name: item.name, remark: item.value });
+                    }
+                });
+                
+                if (urls.length > 0) {
+                    saveUrlsToLocalStorage(urls);
+                    displayUrls(urls);
+                    imported += urls.length;
+                }
+                if (data.length > 0) {
+                    saveDataToLocalStorage(data);
+                    displayDataTable(data);
+                    imported += data.length;
+                }
+                if (tasks.length > 0) {
+                    saveTaskToLocalStorage(tasks);
+                    displayTaskTable(tasks);
+                    imported += tasks.length;
+                }
+            } else if (header.includes('name') && header.includes('url')) {
+                // Links file
+                const urls = parseCSV(csvText);
+                if (urls.length > 0) {
+                    saveUrlsToLocalStorage(urls);
+                    displayUrls(urls);
+                    imported += urls.length;
+                }
+            } else if (header.includes('data name') || (header.includes('name') && header.includes('value'))) {
+                // Data file
+                const data = parseCSV(csvText);
+                if (data.length > 0) {
+                    saveDataToLocalStorage(data);
+                    displayDataTable(data);
+                    imported += data.length;
+                }
+            } else if (header.includes('task name') || (header.includes('name') && header.includes('remark'))) {
+                // Task file
+                const tasks = parseCSV(csvText);
+                if (tasks.length > 0) {
+                    saveTaskToLocalStorage(tasks);
+                    displayTaskTable(tasks);
+                    imported += tasks.length;
+                }
+            } else {
+                // Try to detect by content
+                const urls = parseCSV(csvText);
+                if (urls.length > 0) {
+                    // Check if it looks like URLs
+                    if (urls[0].url && urls[0].url.includes('http')) {
+                        saveUrlsToLocalStorage(urls);
+                        displayUrls(urls);
+                        imported += urls.length;
+                    } else if (urls[0].value !== undefined) {
+                        saveDataToLocalStorage(urls);
+                        displayDataTable(urls);
+                        imported += urls.length;
+                    } else if (urls[0].remark !== undefined) {
+                        saveTaskToLocalStorage(urls);
+                        displayTaskTable(urls);
+                        imported += urls.length;
+                    }
+                }
+            }
+            
+            if (imported > 0) {
+                showSuccessMessage(`成功匯入 ${imported} 筆資料！`);
+            } else {
+                alert('無法識別 CSV 檔案格式。請確認檔案包含正確的標題列。');
+            }
+            
+            // Reset file input
+            event.target.value = '';
+        } catch (error) {
+            console.error('Error parsing CSV:', error);
+            alert('讀取 CSV 檔案時發生錯誤：' + error.message);
+        }
+    };
+    
+    reader.readAsText(file, 'UTF-8');
+}
+
+// Download all data as CSV with category field
+function downloadAllData() {
+    const urls = loadUrlsFromLocalStorage();
+    const data = loadDataFromLocalStorage();
+    const tasks = loadTaskFromLocalStorage();
+    
+    // Create CSV with category field
+    let csvContent = 'Category,Name,Value/URL/Remark\n';
+    
+    // Links
+    urls.forEach(item => {
+        const category = 'URL';
+        const name = `"${(item.name || '').replace(/"/g, '""')}"`;
+        const url = `"${(item.url || '').replace(/"/g, '""')}"`;
+        csvContent += `${category},${name},${url}\n`;
+    });
+    
+    // Data
+    data.forEach(item => {
+        const category = 'data';
+        const name = `"${(item.name || '').replace(/"/g, '""')}"`;
+        const value = `"${(item.value || '').replace(/"/g, '""')}"`;
+        csvContent += `${category},${name},${value}\n`;
+    });
+    
+    // Tasks
+    tasks.forEach(item => {
+        const category = 'work';
+        const name = `"${(item.name || '').replace(/"/g, '""')}"`;
+        const remark = `"${(item.remark || '').replace(/"/g, '""')}"`;
+        csvContent += `${category},${name},${remark}\n`;
+    });
+    
+    if (csvContent === 'Category,Name,Value/URL/Remark\n') {
+        alert('沒有資料可下載。');
+        return;
+    }
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'all_data.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showSuccessMessage('所有資料已成功下載！');
+}
+
+// Clear all data
+function clearAllData() {
+    if (!confirm('確定要清除所有資料嗎？此操作無法復原！')) {
+        return;
+    }
+    
+    // Second confirmation
+    if (!confirm('再次確認：您真的要清除所有資料嗎？')) {
+        return;
+    }
+    
+    // Clear all localStorage
+    localStorage.removeItem('commonUrls');
+    localStorage.removeItem('commonData');
+    localStorage.removeItem('commonTasks');
+    
+    // Refresh displays
+    showEmpty();
+    showDataEmpty();
+    showTaskEmpty();
+    
+    showSuccessMessage('所有資料已清除！');
 }
