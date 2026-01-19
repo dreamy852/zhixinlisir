@@ -75,18 +75,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelAddDataBtn = document.getElementById('cancel-add-data-btn');
 
     if (showAddDataBtn && addDataFormContainer) {
-        showAddDataBtn.addEventListener('click', () => {
+        showAddDataBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Add data button clicked');
             addDataFormContainer.style.display = 'block';
             showAddDataBtn.style.display = 'none';
-            document.getElementById('data-name').focus();
+            const dataNameInput = document.getElementById('data-name');
+            if (dataNameInput) {
+                dataNameInput.focus();
+            }
+        });
+    } else {
+        console.error('Add data button or container not found:', {
+            button: showAddDataBtn,
+            container: addDataFormContainer
         });
     }
 
     if (cancelAddDataBtn && addDataFormContainer && showAddDataBtn) {
-        cancelAddDataBtn.addEventListener('click', () => {
+        cancelAddDataBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             addDataFormContainer.style.display = 'none';
             showAddDataBtn.style.display = 'inline-block';
-            document.getElementById('add-data-form').reset();
+            const addDataForm = document.getElementById('add-data-form');
+            if (addDataForm) {
+                addDataForm.reset();
+            }
         });
     }
 
@@ -101,18 +117,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelAddTaskBtn = document.getElementById('cancel-add-task-btn');
 
     if (showAddTaskBtn && addTaskFormContainer) {
-        showAddTaskBtn.addEventListener('click', () => {
+        showAddTaskBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Add task button clicked');
             addTaskFormContainer.style.display = 'block';
             showAddTaskBtn.style.display = 'none';
-            document.getElementById('task-name').focus();
+            const taskNameInput = document.getElementById('task-name');
+            if (taskNameInput) {
+                taskNameInput.focus();
+            }
+        });
+    } else {
+        console.error('Add task button or container not found:', {
+            button: showAddTaskBtn,
+            container: addTaskFormContainer
         });
     }
 
     if (cancelAddTaskBtn && addTaskFormContainer && showAddTaskBtn) {
-        cancelAddTaskBtn.addEventListener('click', () => {
+        cancelAddTaskBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             addTaskFormContainer.style.display = 'none';
             showAddTaskBtn.style.display = 'inline-block';
-            document.getElementById('add-task-form').reset();
+            const addTaskForm = document.getElementById('add-task-form');
+            if (addTaskForm) {
+                addTaskForm.reset();
+            }
         });
     }
 });
@@ -373,6 +405,24 @@ function escapeHtml(text) {
 }
 
 // ==================== DATA FUNCTIONS ====================
+
+// Function to load Data from localStorage on page load
+function loadDataOnPageLoad() {
+    const dataList = document.getElementById('data-list');
+    if (!dataList) return;
+    
+    try {
+        const data = loadDataFromLocalStorage();
+        if (data.length > 0) {
+            displayDataTable(data);
+        } else {
+            showDataEmpty();
+        }
+    } catch (error) {
+        console.error('Error loading data:', error);
+        dataList.innerHTML = '<tr><td colspan="3" class="error">載入資料時發生錯誤。請稍後再試。</td></tr>';
+    }
+}
 
 // Function to load Data from CSV file
 async function loadDataFromCSV() {
