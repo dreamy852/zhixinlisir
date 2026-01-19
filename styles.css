@@ -388,6 +388,17 @@ header h1 {
     border-bottom: 1px solid #e0e0e0;
 }
 
+.data-table td a {
+    color: #27ae60;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.data-table td a:hover {
+    text-decoration: underline;
+    color: #9acd32;
+}
+
 .data-table tbody tr:hover {
     background: linear-gradient(135deg, rgba(154, 205, 50, 0.1) 0%, rgba(39, 174, 96, 0.1) 100%);
 }

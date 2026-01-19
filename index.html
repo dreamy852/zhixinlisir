@@ -47,8 +47,21 @@
 
             <div class="urls-display">
                 <h3>已儲存的連結</h3>
-                <div id="urls-list" class="urls-list">
-                    <p class="loading">正在從 CSV 檔案載入連結...</p>
+                <div id="urls-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>連結名稱</th>
+                                <th>連結網址</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="urls-list">
+                            <tr>
+                                <td colspan="3" class="loading">正在從 CSV 檔案載入連結...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

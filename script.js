@@ -150,7 +150,7 @@ async function loadUrlsFromCSV() {
         console.error('Error loading URLs:', error);
         const localUrls = loadUrlsFromLocalStorage();
         if (localUrls.length === 0) {
-            urlsList.innerHTML = '<p class="error">載入連結時發生錯誤。請稍後再試。</p>';
+            urlsList.innerHTML = '<tr><td colspan="3" class="error">載入連結時發生錯誤。請稍後再試。</td></tr>';
         }
     }
 }
@@ -225,17 +225,20 @@ function displayUrls(urls) {
     window.currentUrls = urls;
     
     urlsList.innerHTML = urls.map((item, index) => `
-        <div class="url-item">
-            <a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.name || item.url}</a>
-            <button class="delete-btn" onclick="deleteUrl(${index})" title="刪除連結">×</button>
-        </div>
+        <tr>
+            <td>${escapeHtml(item.name || '')}</td>
+            <td><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a></td>
+            <td>
+                <button class="delete-btn" onclick="deleteUrl(${index})" title="刪除連結">×</button>
+            </td>
+        </tr>
     `).join('');
 }
 
 // Show empty state
 function showEmpty() {
     const urlsList = document.getElementById('urls-list');
-    urlsList.innerHTML = '<p class="empty">尚未找到連結。請使用上方表單新增第一個連結。</p>';
+    urlsList.innerHTML = '<tr><td colspan="3" class="empty">尚未找到連結。請使用上方表單新增第一個連結。</td></tr>';
 }
 
 // Handle add URL form submission
