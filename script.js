@@ -24,9 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load URLs from CSV file on page load
     loadUrlsFromCSV();
-    
-    // Update download button on page load
-    updateDownloadButton();
 
     // Handle form submission
     const addUrlForm = document.getElementById('add-url-form');
@@ -153,7 +150,7 @@ async function loadUrlsFromCSV() {
         console.error('Error loading URLs:', error);
         const localUrls = loadUrlsFromLocalStorage();
         if (localUrls.length === 0) {
-            urlsList.innerHTML = '<p class="error">Error loading URLs. Please try again later.</p>';
+            urlsList.innerHTML = '<p class="error">載入連結時發生錯誤。請稍後再試。</p>';
         }
     }
 }
@@ -230,7 +227,7 @@ function displayUrls(urls) {
     urlsList.innerHTML = urls.map((item, index) => `
         <div class="url-item">
             <a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.name || item.url}</a>
-            <button class="delete-btn" onclick="deleteUrl(${index})" title="Delete URL">×</button>
+            <button class="delete-btn" onclick="deleteUrl(${index})" title="刪除連結">×</button>
         </div>
     `).join('');
 }
@@ -238,7 +235,7 @@ function displayUrls(urls) {
 // Show empty state
 function showEmpty() {
     const urlsList = document.getElementById('urls-list');
-    urlsList.innerHTML = '<p class="empty">No URLs found. Add your first URL using the form above.</p>';
+    urlsList.innerHTML = '<p class="empty">尚未找到連結。請使用上方表單新增第一個連結。</p>';
 }
 
 // Handle add URL form submission
@@ -252,7 +249,7 @@ async function handleAddUrl(event) {
     const url = urlInput.value.trim();
     
     if (!name || !url) {
-        alert('Please fill in both URL name and link.');
+        alert('請填寫連結名稱和網址。');
         return;
     }
     
@@ -260,7 +257,7 @@ async function handleAddUrl(event) {
     try {
         new URL(url);
     } catch (e) {
-        alert('Please enter a valid URL (starting with http:// or https://)');
+        alert('請輸入有效的網址（需以 http:// 或 https:// 開頭）');
         return;
     }
     
@@ -271,7 +268,7 @@ async function handleAddUrl(event) {
     displayUrls(urls);
     
     // Show success message
-    showSuccessMessage('URL added successfully! You can download the updated CSV file.');
+    showSuccessMessage('連結已成功新增！');
     
     // Clear form and hide it
     nameInput.value = '';
@@ -285,8 +282,6 @@ async function handleAddUrl(event) {
         showAddFormBtn.style.display = 'inline-block';
     }
     
-    // Update download button visibility
-    updateDownloadButton();
 }
 
 // Download CSV file with current URLs
@@ -317,39 +312,10 @@ function downloadCSV() {
     showSuccessMessage('CSV file downloaded successfully!');
 }
 
-// Update download button visibility
-function updateDownloadButton() {
-    const urls = loadUrlsFromLocalStorage();
-    let downloadBtn = document.getElementById('download-csv-btn');
-    
-    if (urls.length > 0) {
-        if (!downloadBtn) {
-            // Create download button if it doesn't exist
-            downloadBtn = document.createElement('button');
-            downloadBtn.id = 'download-csv-btn';
-            downloadBtn.className = 'btn-primary';
-            downloadBtn.textContent = 'Download links.csv';
-            downloadBtn.onclick = downloadCSV;
-            
-            const addUrlSection = document.querySelector('.add-url-section');
-            const showAddFormBtn = document.getElementById('show-add-form-btn');
-            if (showAddFormBtn) {
-                // Insert after the "Add URL" button
-                showAddFormBtn.parentNode.insertBefore(downloadBtn, showAddFormBtn.nextSibling);
-            } else {
-                // Fallback: insert at the beginning of add-url-section
-                addUrlSection.insertBefore(downloadBtn, addUrlSection.firstChild);
-            }
-        }
-        downloadBtn.style.display = 'inline-block';
-    } else if (downloadBtn) {
-        downloadBtn.style.display = 'none';
-    }
-}
 
 // Delete URL
 async function deleteUrl(index) {
-    if (confirm('Are you sure you want to delete this URL?')) {
+    if (confirm('確定要刪除此連結嗎？')) {
         // Get current URLs (from display or localStorage)
         const urls = window.currentUrls || loadUrlsFromLocalStorage();
         
@@ -357,10 +323,7 @@ async function deleteUrl(index) {
         urls.splice(index, 1);
         saveUrlsToLocalStorage(urls);
         displayUrls(urls);
-        showSuccessMessage('URL deleted successfully! You can download the updated CSV file.');
-        
-        // Update download button visibility
-        updateDownloadButton();
+        showSuccessMessage('連結已成功刪除！');
     }
 }
 
@@ -439,7 +402,7 @@ async function loadDataFromCSV() {
         console.error('Error loading data:', error);
         const localData = loadDataFromLocalStorage();
         if (localData.length === 0) {
-            dataList.innerHTML = '<tr><td colspan="3" class="error">Error loading data. Please try again later.</td></tr>';
+            dataList.innerHTML = '<tr><td colspan="3" class="error">載入資料時發生錯誤。請稍後再試。</td></tr>';
         }
     }
 }
@@ -461,7 +424,7 @@ function displayDataTable(data) {
             <td>${escapeHtml(item.name || '')}</td>
             <td>${escapeHtml(item.value || '')}</td>
             <td>
-                <button class="delete-btn" onclick="deleteData(${index})" title="Delete Data">×</button>
+                <button class="delete-btn" onclick="deleteData(${index})" title="刪除資料">×</button>
             </td>
         </tr>
     `).join('');
@@ -471,7 +434,7 @@ function displayDataTable(data) {
 function showDataEmpty() {
     const dataList = document.getElementById('data-list');
     if (!dataList) return;
-    dataList.innerHTML = '<tr><td colspan="3" class="empty">No data found. Add your first data using the form above.</td></tr>';
+    dataList.innerHTML = '<tr><td colspan="3" class="empty">尚未找到資料。請使用上方表單新增第一筆資料。</td></tr>';
 }
 
 // Handle add Data form submission
@@ -485,7 +448,7 @@ async function handleAddData(event) {
     const value = valueInput.value.trim();
     
     if (!name || !value) {
-        alert('Please fill in both data name and value.');
+        alert('請填寫資料名稱和數值。');
         return;
     }
     
@@ -495,7 +458,7 @@ async function handleAddData(event) {
     saveDataToLocalStorage(data);
     displayDataTable(data);
     
-    showSuccessMessage('Data added successfully! You can download the updated CSV file.');
+    showSuccessMessage('資料已成功新增！');
     
     // Clear form and hide it
     nameInput.value = '';
@@ -511,12 +474,12 @@ async function handleAddData(event) {
 
 // Delete Data
 async function deleteData(index) {
-    if (confirm('Are you sure you want to delete this data?')) {
+    if (confirm('確定要刪除此資料嗎？')) {
         const data = window.currentData || loadDataFromLocalStorage();
         data.splice(index, 1);
         saveDataToLocalStorage(data);
         displayDataTable(data);
-        showSuccessMessage('Data deleted successfully! You can download the updated CSV file.');
+        showSuccessMessage('資料已成功刪除！');
     }
 }
 
@@ -615,7 +578,7 @@ function displayTaskTable(tasks) {
             <td>${escapeHtml(item.name || '')}</td>
             <td>${escapeHtml(item.remark || '')}</td>
             <td>
-                <button class="delete-btn" onclick="deleteTask(${index})" title="Delete Task">×</button>
+                <button class="delete-btn" onclick="deleteTask(${index})" title="刪除工作">×</button>
             </td>
         </tr>
     `).join('');
@@ -625,7 +588,7 @@ function displayTaskTable(tasks) {
 function showTaskEmpty() {
     const taskList = document.getElementById('task-list');
     if (!taskList) return;
-    taskList.innerHTML = '<tr><td colspan="3" class="empty">No tasks found. Add your first task using the form above.</td></tr>';
+    taskList.innerHTML = '<tr><td colspan="3" class="empty">尚未找到工作。請使用上方表單新增第一個工作。</td></tr>';
 }
 
 // Handle add Task form submission
@@ -639,7 +602,7 @@ async function handleAddTask(event) {
     const remark = remarkInput.value.trim();
     
     if (!name) {
-        alert('Please fill in task name.');
+        alert('請填寫工作名稱。');
         return;
     }
     
@@ -649,7 +612,7 @@ async function handleAddTask(event) {
     saveTaskToLocalStorage(tasks);
     displayTaskTable(tasks);
     
-    showSuccessMessage('Task added successfully! You can download the updated CSV file.');
+    showSuccessMessage('工作已成功新增！');
     
     // Clear form and hide it
     nameInput.value = '';
@@ -665,12 +628,12 @@ async function handleAddTask(event) {
 
 // Delete Task
 async function deleteTask(index) {
-    if (confirm('Are you sure you want to delete this task?')) {
+    if (confirm('確定要刪除此工作嗎？')) {
         const tasks = window.currentTasks || loadTaskFromLocalStorage();
         tasks.splice(index, 1);
         saveTaskToLocalStorage(tasks);
         displayTaskTable(tasks);
-        showSuccessMessage('Task deleted successfully! You can download the updated CSV file.');
+        showSuccessMessage('工作已成功刪除！');
     }
 }
 

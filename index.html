@@ -1,99 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index - Common URL, Data, Task</title>
+    <title>質心教育工作台</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Index Dashboard</h1>
+            <h1>質心教育工作台</h1>
         </header>
 
         <div class="tabs">
-            <button class="tab-button active" data-tab="common-url">Common URL</button>
-            <button class="tab-button" data-tab="data">Data</button>
-            <button class="tab-button" data-tab="task">Task</button>
+            <button class="tab-button active" data-tab="common-url">一般連結</button>
+            <button class="tab-button" data-tab="data">資料</button>
+            <button class="tab-button" data-tab="task">工作</button>
         </div>
 
         <div class="tab-content active" id="common-url">
             <div class="section-header">
-                <h2>Common URLs</h2>
-                <p class="sheet-info">Data stored in: <code>links.csv</code> (loaded on page load)</p>
+                <h2>一般連結</h2>
+                <p class="sheet-info">資料儲存在：<code>links.csv</code>（頁面載入時讀取）</p>
             </div>
             
             <div class="add-url-section">
-                <button id="show-add-form-btn" class="btn-primary">Add URL</button>
+                <button id="show-add-form-btn" class="btn-primary">新增連結</button>
                 <div id="add-url-form-container" class="add-url-form-container" style="display: none;">
-                    <h3>Add New URL</h3>
+                    <h3>新增連結</h3>
                     <form id="add-url-form">
                         <div class="form-group">
-                            <label for="url-name">URL Name:</label>
-                            <input type="text" id="url-name" name="url-name" required placeholder="Enter URL name">
+                            <label for="url-name">連結名稱：</label>
+                            <input type="text" id="url-name" name="url-name" required placeholder="輸入連結名稱">
                         </div>
                         <div class="form-group">
-                            <label for="url-link">URL Link:</label>
+                            <label for="url-link">連結網址：</label>
                             <input type="url" id="url-link" name="url-link" required placeholder="https://example.com">
                         </div>
                         <div class="form-buttons">
-                            <button type="submit" class="btn-primary">Add URL</button>
-                            <button type="button" id="cancel-add-form-btn" class="btn-secondary">Cancel</button>
+                            <button type="submit" class="btn-primary">新增連結</button>
+                            <button type="button" id="cancel-add-form-btn" class="btn-secondary">取消</button>
                         </div>
                     </form>
                 </div>
             </div>
 
             <div class="urls-display">
-                <h3>Saved URLs</h3>
+                <h3>已儲存的連結</h3>
                 <div id="urls-list" class="urls-list">
-                    <p class="loading">Loading URLs from CSV file...</p>
+                    <p class="loading">正在從 CSV 檔案載入連結...</p>
                 </div>
             </div>
         </div>
 
         <div class="tab-content" id="data">
             <div class="section-header">
-                <h2>Data</h2>
-                <p class="sheet-info">Data stored in: <code>data.csv</code> (loaded on page load)</p>
+                <h2>資料</h2>
+                <p class="sheet-info">資料儲存在：<code>data.csv</code>（頁面載入時讀取）</p>
             </div>
             
             <div class="add-url-section">
-                <button id="show-add-data-btn" class="btn-primary">Add Data</button>
+                <button id="show-add-data-btn" class="btn-primary">新增資料</button>
                 <div id="add-data-form-container" class="add-url-form-container" style="display: none;">
-                    <h3>Add New Data</h3>
+                    <h3>新增資料</h3>
                     <form id="add-data-form">
                         <div class="form-group">
-                            <label for="data-name">Data Name:</label>
-                            <input type="text" id="data-name" name="data-name" required placeholder="Enter data name">
+                            <label for="data-name">資料名稱：</label>
+                            <input type="text" id="data-name" name="data-name" required placeholder="輸入資料名稱">
                         </div>
                         <div class="form-group">
-                            <label for="data-value">Data Value:</label>
-                            <input type="text" id="data-value" name="data-value" required placeholder="Enter data value">
+                            <label for="data-value">資料數值：</label>
+                            <input type="text" id="data-value" name="data-value" required placeholder="輸入資料數值">
                         </div>
                         <div class="form-buttons">
-                            <button type="submit" class="btn-primary">Add Data</button>
-                            <button type="button" id="cancel-add-data-btn" class="btn-secondary">Cancel</button>
+                            <button type="submit" class="btn-primary">新增資料</button>
+                            <button type="button" id="cancel-add-data-btn" class="btn-secondary">取消</button>
                         </div>
                     </form>
                 </div>
             </div>
 
             <div class="urls-display">
-                <h3>Saved Data</h3>
+                <h3>已儲存的資料</h3>
                 <div id="data-table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Data Name</th>
-                                <th>Data Value</th>
-                                <th>Action</th>
+                                <th>資料名稱</th>
+                                <th>資料數值</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody id="data-list">
                             <tr>
-                                <td colspan="3" class="loading">Loading data from CSV file...</td>
+                                <td colspan="3" class="loading">正在從 CSV 檔案載入資料...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -103,45 +103,45 @@
 
         <div class="tab-content" id="task">
             <div class="section-header">
-                <h2>Task</h2>
-                <p class="sheet-info">Data stored in: <code>task.csv</code> (loaded on page load)</p>
+                <h2>工作</h2>
+                <p class="sheet-info">資料儲存在：<code>task.csv</code>（頁面載入時讀取）</p>
             </div>
             
             <div class="add-url-section">
-                <button id="show-add-task-btn" class="btn-primary">Add Task</button>
+                <button id="show-add-task-btn" class="btn-primary">新增工作</button>
                 <div id="add-task-form-container" class="add-url-form-container" style="display: none;">
-                    <h3>Add New Task</h3>
+                    <h3>新增工作</h3>
                     <form id="add-task-form">
                         <div class="form-group">
-                            <label for="task-name">Task Name:</label>
-                            <input type="text" id="task-name" name="task-name" required placeholder="Enter task name">
+                            <label for="task-name">工作名稱：</label>
+                            <input type="text" id="task-name" name="task-name" required placeholder="輸入工作名稱">
                         </div>
                         <div class="form-group">
-                            <label for="task-remark">Remark:</label>
-                            <input type="text" id="task-remark" name="task-remark" placeholder="Enter remark (optional)">
+                            <label for="task-remark">備註：</label>
+                            <input type="text" id="task-remark" name="task-remark" placeholder="輸入備註（選填）">
                         </div>
                         <div class="form-buttons">
-                            <button type="submit" class="btn-primary">Add Task</button>
-                            <button type="button" id="cancel-add-task-btn" class="btn-secondary">Cancel</button>
+                            <button type="submit" class="btn-primary">新增工作</button>
+                            <button type="button" id="cancel-add-task-btn" class="btn-secondary">取消</button>
                         </div>
                     </form>
                 </div>
             </div>
 
             <div class="urls-display">
-                <h3>Saved Tasks</h3>
+                <h3>已儲存的工作</h3>
                 <div id="task-table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Task Name</th>
-                                <th>Remark</th>
-                                <th>Action</th>
+                                <th>工作名稱</th>
+                                <th>備註</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody id="task-list">
                             <tr>
-                                <td colspan="3" class="loading">Loading tasks from CSV file...</td>
+                                <td colspan="3" class="loading">正在從 CSV 檔案載入工作...</td>
                             </tr>
                         </tbody>
                     </table>
