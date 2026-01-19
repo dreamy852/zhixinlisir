@@ -3,7 +3,7 @@ const SHEET_ID = '1utrF4anYUAoDGHMj1tAZDQOVbi-l61LYRWWMAIJJ1lw';
 const SHEET_NAME = 'Sheet1'; // Default sheet name
 
 // Google Apps Script Web App URL
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4IuZThCSvWvNMAdBuHt4iCEpcBEEMPwh4pmXK6wWJrzbRB0mfSOrk-d9xKAYQWIw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeOmvP6PuNzteC3z4MG7ae3hz2ZfbXXiU_5V6VRRJ6BGaLflLwAgFvVFbxPa-NMdRL/exec';
 
 // Tab switching functionality
 document.addEventListener('DOMContentLoaded', function() {
