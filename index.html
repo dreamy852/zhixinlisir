@@ -25,36 +25,128 @@
             </div>
             
             <div class="add-url-section">
-                <h3>Add New URL</h3>
-                <form id="add-url-form">
-                    <div class="form-group">
-                        <label for="url-name">URL Name:</label>
-                        <input type="text" id="url-name" name="url-name" required placeholder="Enter URL name">
-                    </div>
-                    <div class="form-group">
-                        <label for="url-link">URL Link:</label>
-                        <input type="url" id="url-link" name="url-link" required placeholder="https://example.com">
-                    </div>
-                    <button type="submit" class="btn-primary">Add URL</button>
-                </form>
+                <button id="show-add-form-btn" class="btn-primary">Add URL</button>
+                <div id="add-url-form-container" class="add-url-form-container" style="display: none;">
+                    <h3>Add New URL</h3>
+                    <form id="add-url-form">
+                        <div class="form-group">
+                            <label for="url-name">URL Name:</label>
+                            <input type="text" id="url-name" name="url-name" required placeholder="Enter URL name">
+                        </div>
+                        <div class="form-group">
+                            <label for="url-link">URL Link:</label>
+                            <input type="url" id="url-link" name="url-link" required placeholder="https://example.com">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn-primary">Add URL</button>
+                            <button type="button" id="cancel-add-form-btn" class="btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <div class="urls-display">
                 <h3>Saved URLs</h3>
                 <div id="urls-list" class="urls-list">
-                    <p class="loading">Loading URLs from Google Sheet...</p>
+                    <p class="loading">Loading URLs from CSV file...</p>
                 </div>
             </div>
         </div>
 
         <div class="tab-content" id="data">
-            <h2>Data</h2>
-            <p>Data tab content goes here.</p>
+            <div class="section-header">
+                <h2>Data</h2>
+                <p class="sheet-info">Data stored in: <code>data.csv</code> (loaded on page load)</p>
+            </div>
+            
+            <div class="add-url-section">
+                <button id="show-add-data-btn" class="btn-primary">Add Data</button>
+                <div id="add-data-form-container" class="add-url-form-container" style="display: none;">
+                    <h3>Add New Data</h3>
+                    <form id="add-data-form">
+                        <div class="form-group">
+                            <label for="data-name">Data Name:</label>
+                            <input type="text" id="data-name" name="data-name" required placeholder="Enter data name">
+                        </div>
+                        <div class="form-group">
+                            <label for="data-value">Data Value:</label>
+                            <input type="text" id="data-value" name="data-value" required placeholder="Enter data value">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn-primary">Add Data</button>
+                            <button type="button" id="cancel-add-data-btn" class="btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="urls-display">
+                <h3>Saved Data</h3>
+                <div id="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Data Name</th>
+                                <th>Data Value</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-list">
+                            <tr>
+                                <td colspan="3" class="loading">Loading data from CSV file...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div class="tab-content" id="task">
-            <h2>Task</h2>
-            <p>Task tab content goes here.</p>
+            <div class="section-header">
+                <h2>Task</h2>
+                <p class="sheet-info">Data stored in: <code>task.csv</code> (loaded on page load)</p>
+            </div>
+            
+            <div class="add-url-section">
+                <button id="show-add-task-btn" class="btn-primary">Add Task</button>
+                <div id="add-task-form-container" class="add-url-form-container" style="display: none;">
+                    <h3>Add New Task</h3>
+                    <form id="add-task-form">
+                        <div class="form-group">
+                            <label for="task-name">Task Name:</label>
+                            <input type="text" id="task-name" name="task-name" required placeholder="Enter task name">
+                        </div>
+                        <div class="form-group">
+                            <label for="task-remark">Remark:</label>
+                            <input type="text" id="task-remark" name="task-remark" placeholder="Enter remark (optional)">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn-primary">Add Task</button>
+                            <button type="button" id="cancel-add-task-btn" class="btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="urls-display">
+                <h3>Saved Tasks</h3>
+                <div id="task-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Task Name</th>
+                                <th>Remark</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-list">
+                            <tr>
+                                <td colspan="3" class="loading">Loading tasks from CSV file...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
